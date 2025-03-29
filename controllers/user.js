@@ -1,39 +1,55 @@
-const getUser = (req, res) => {
+const bcryptjs = require('bcryptjs');
+const User = require('../models/user');
 
-    const { nombre, edad, nacionalidad } = req.query;
-    
+const getUser = async (req, res) => {
+
+    const query = req.query;
+
+    const [ total, users ] = await Promise.all([
+        User.countDocuments({status: true } ),
+        User.find( {status: true } )
+    ]);
+
     res.json({
-        msg: 'get method in user',
-        nombre,
-        edad,
-        nacionalidad
+        total,
+        users
     });
 }
 
 const postUser = (req, res) => {
 
-    const data = req.body;
+    const { name, email, password, role} = req.body;
+    const user = new User({name, email, password, role});
+
+    const salt = bcryptjs.genSaltSync();
+    user.password = bcryptjs.hashSync(user.password, salt);
+
+    user.save();
 
     res.json({
-        msg: 'post method in user',
-        data
+        user
     });
 }
 
-const putUser = (req, res) => {
+const putUser = async (req, res) => {
     
     const { id } = req.params;
+    const { __id, password, google, ...rest } = req.body;
 
-    res.json({
-        msg: 'put method in user',
-        id
-    });
+    if (password) {
+        const salt = bcryptjs.genSaltSync();
+        rest.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate( id, rest );
 }
 
-const deleteUser = (req, res) => {
-    res.json({
-        msg: 'delete method in user'
-    });
+const deleteUser = async (req, res) => {
+    const { id } = req.params;
+
+    const user = await User.findByIdAndUpdate(id, { status: false });
+
+    res.json(user);
 }
 
 module.exports = {
