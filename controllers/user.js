@@ -2,9 +2,6 @@ const bcryptjs = require('bcryptjs');
 const User = require('../models/user');
 
 const getUser = async (req, res) => {
-
-    const query = req.query;
-
     const [ total, users ] = await Promise.all([
         User.countDocuments({status: true } ),
         User.find( {status: true } )
@@ -49,7 +46,9 @@ const deleteUser = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(id, { status: false });
 
-    res.json(user);
+    res.json({
+        user
+    });
 }
 
 module.exports = {
