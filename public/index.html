@@ -3,9 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso denegado</title>
+    <title>Google Sign in</title>
 </head>
 <body>
-    <h1>Acceso denegado</h1>
+    <h1>Google Sign in</h1>
+    <hr>
+    <div id="g_id_onload"
+        data-client_id="739584045050-c90bkb8i5ocm0o1e5rmui1mib6tosk9l.apps.googleusercontent.com"
+        data-auto_prompt="false"
+        data-callback="handleCredentialResponse">
+        
+    </div>
+    <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="sign_in_with"
+        data-shape="rectangular"
+        data-logo_alignment="left">
+    </div>
+    <button id="google_signout">
+        SignOut
+    </button>
+    <script>
+        function handleCredentialResponse(response) {
+
+            const body = {'id_token': response.credential}
+
+            fetch('http://localhost:8080/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json())
+            .then(res => {
+                localStorage.setItem('email', res.user.email);
+            })
+        }
+
+        const button = document.getElementById('google_signout');
+
+        button.onclick = () => {
+            google.accounts.id.disableAutoSelect();
+            google.accounts.id.revoke(localStorage.getItem('email'), done => {
+                localStorage.removeItem('email');
+                location.reload();
+            });
+        }
+      </script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
 </body>
 </html>
