@@ -10,7 +10,7 @@ const validateJWT = async (req , res, next) => {
     try {
         const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
         
-        const userAuth = await User.findById({ _id: uid});
+        const userAuth = await User.findById({ _id: uid });
 
         if (!userAuth) return res.status(401).json({ msg: 'Token no valido - usuario no registrado' });
 
