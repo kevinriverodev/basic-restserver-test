@@ -42,6 +42,11 @@ const productExistByName = async (name = '') => {
 
     if (product)  throw new Error('El producto ya esta registrado en la base de datos');
 } 
+const isAllowedCollection = (collection, allowedCollections) => {
+    if (!allowedCollections.includes(collection)) throw new Error('La coleccion ingresada no es valida');
+
+    return true;
+}
 
 module.exports = {
     isValidRole,
@@ -50,5 +55,6 @@ module.exports = {
     categoryExist,
     categoryExistByName,
     productExist,
-    productExistByName
+    productExistByName,
+    isAllowedCollection
 }
